@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  users-service:
+    container_name: users-service
+    build:
+      context: ./packages/users-service
+      target: users-service
+    ports:
+      - 3000:3000
+    volumes:
+      - ./packages/users-service:/usr/src/app
