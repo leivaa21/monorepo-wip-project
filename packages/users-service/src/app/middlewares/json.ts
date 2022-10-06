@@ -1,10 +1,8 @@
-import { IncomingMessage, ServerResponse } from "http";
-import Middleware from "../lib/http/decorators/middleware";
-import HttpMiddleware from "../lib/http/HttpMiddleware";
+import { HttpMiddleware, HttpRequest, HttpResponse, Middleware } from "../lib/http";
 
 @Middleware()
 class json implements HttpMiddleware {
-  async execute(req: IncomingMessage, res: ServerResponse<IncomingMessage>): Promise<void> {
+  async execute(req: HttpRequest, res: HttpResponse): Promise<void> {
     res.setHeader("Content-Type", "application/json");
   }
 }

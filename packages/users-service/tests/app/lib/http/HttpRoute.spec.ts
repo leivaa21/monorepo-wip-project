@@ -1,4 +1,4 @@
-import HttpRoute from "../../../../src/app/lib/http/HttRoute";
+import HttpRoute from "../../../../src/app/lib/http/HttpRoute";
 
 describe('Testing route matches', () => {
   test('Simple route', () => {

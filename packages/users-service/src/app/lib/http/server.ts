@@ -1,8 +1,10 @@
-import { createServer, Server as httpServer } from 'http';
+import { createServer, IncomingMessage, Server as httpServer, ServerResponse } from 'http';
 import HttpController from './HttpController';
 import HttpError from './HttpError';
 import HttpErrorHandler from './HttpErrorHandler';
+import HttpRequest from './HttpRequest';
 import HttpRequestHandler from './HttpRequestHandler';
+import HttpResponse from './HttpResponse';
 import HttpRouter from './HttpRouter';
 import { HttpMethod } from './types';
 
@@ -23,9 +25,7 @@ class ServerClass {
     res.end(JSON.stringify({ status, statusMessage, message }));
   }
   
-  private constructor() {
-    this._routers.set('', new HttpRouter());
-  }
+  private constructor() {}
   public static getInstance() {
     if (this.instance === undefined) {
       this.instance = new this();
@@ -38,16 +38,44 @@ class ServerClass {
     return createServer(async (req, res) => {
 
       if (req.url === undefined || req.method === undefined) return;
-
       try {
-        this._middlewares.map(middleware => middleware(req, res));      
-
+        /**************
+         / Zona de peligro /!\
+         /
+         / Lo que hago aqui es parsear:
+         / IncomingMessage => HttpRequest
+         / ServerResponse<IncomingMessage> => HttpResponse
+         / 
+         / Con esto: 
+         / - La request tiene la propiedad body con el body ya parseado a json
+         / - La response tiene una funcion send(status, body), por pura comodidad vamos...
+         /
+         / Ambos tipos heredan todas las propiedades de los tipos anteriores,
+         / por lo que pueden tratarse como IncomingMessage y ServerResponse<IncomingMessage>
+        /*****************/
+        const formatRequest = async (req: IncomingMessage) => {
+          (req as unknown as { body: {} }).body = await HttpRequest.getReqBody(req);
+          return req as HttpRequest;
+        }
+        const formatResponse = (res: ServerResponse<IncomingMessage>) => {
+          (res as unknown as HttpResponse).send = (status, body) => {
+            (res as unknown as HttpResponse).statusCode = status;
+            (res as unknown as HttpResponse).end(JSON.stringify(body));
+          }
+          return res as HttpResponse;
+        }
+        const request = await formatRequest(req);
+        let response = formatResponse(res);
+        /*/
+        / Fin de la zona de peligro /!\
+        /*/
+        this._middlewares.map(middleware => middleware(request, response));      
         const routers = Array.from(this._routers.keys());
         const triggeredRouters = routers.filter(router_basePath => (req.url as string).startsWith(router_basePath));
 
 
         for await (const router of triggeredRouters) {
-          if (await (this._routers.get(router) as HttpRouter).handle(req, res)) {
+          if (await (this._routers.get(router) as HttpRouter).handle(request, response)) {
             return;
           };
         }
@@ -63,11 +91,12 @@ class ServerClass {
   }
 
   registerMiddleware(router: string, middleware: HttpRequestHandler) {
-    if (router = '') {
-      this._middlewares.push(middleware);    
+    if (router = '/') {
+      this._middlewares.push(middleware);
+      return;
     }
     if (this._routers.get(router) === undefined) {
-      this._routers.set(router, new HttpRouter(router));
+        this._routers.set(router, new HttpRouter(router));
     }
     (this._routers.get(router) as HttpRouter).use(middleware);
   }
@@ -78,6 +107,7 @@ class ServerClass {
     if (this._routers.get(basePath) === undefined) {
       this._routers.set(basePath, new HttpRouter(basePath));
     }
+
     switch (method) {
       case "GET":
         (this._routers.get(basePath) as HttpRouter).get(relativePath, controller);
@@ -99,3 +129,5 @@ class ServerClass {
 }
 
 export const Server = ServerClass.getInstance();
+
+

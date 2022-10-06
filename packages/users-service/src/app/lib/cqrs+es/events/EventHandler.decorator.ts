@@ -5,7 +5,7 @@ import { EventHandlerOptions } from "./EventHandlerOptions";
 import { IEventHandler } from "./IEventHandler";
 
 export default function EventHandler(options: EventHandlerOptions) {
-  return (constructor: Constructor<IEventHandler>) => {
+  return (constructor: Constructor<IEventHandler<Object>>) => {
     let { Event, deps } = options;
     if (deps === undefined) deps = [];
     const buildedDependencies =

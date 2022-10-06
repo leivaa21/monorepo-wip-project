@@ -3,7 +3,7 @@ import DependenicesDoesNotMatchException from "../exceptions/DependenciesDoesNot
 import UndefinedDependenciesOnDecoratorException from "../exceptions/UndefinedDependenciesOnDecorator";
 import Injector, { InjectableInfo, InjectableObject } from "../Injector.entity";
 
-type InjectableOptions = {
+export type InjectableOptions = {
   deps: Constructor<InjectableObject>[]
 }
 

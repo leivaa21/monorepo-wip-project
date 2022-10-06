@@ -1,11 +1,11 @@
-import { IncomingMessage, ServerResponse } from "http";
 import logger from "../logger/consoleLogger";
 import HttpController from "./HttpController";
+import HttpRequest from "./HttpRequest";
 import HttpRequestHandler from "./HttpRequestHandler";
-import HttpRoute from "./HttRoute";
+import HttpResponse from "./HttpResponse";
+import HttpRoute from "./HttpRoute";
 import { HttpMethod } from "./types";
 
-type path = string;
 /**
  * Endpoints Mapping =>
  * 
@@ -22,20 +22,23 @@ type path = string;
  */
 class HttpRouter {
   
-  private readonly _endpoints = new Map<path, Map<HttpMethod, HttpController>>();
+  private readonly _endpoints = new Map<string, Map<HttpMethod, HttpController>>();
   private readonly _middlewares = new Array<HttpRequestHandler>();
-  constructor(private readonly _basePath: path = '') { }
+  private readonly _basePath: string;
+  constructor(basePath: string) {
+    this._basePath = basePath;
+   }
   
-  get(path: path, controller: HttpController) {
+  get(path: string, controller: HttpController) {
     this.defineEndpoint(path, "GET", controller);
   }
-  post(path: path, controller: HttpController) {
+  post(path: string, controller: HttpController) {
     this.defineEndpoint(path, "POST", controller);
   }
-  put(path: path, controller: HttpController) {
+  put(path: string, controller: HttpController) {
     this.defineEndpoint(path, "PUT", controller);
   }
-  delete(path: path, controller: HttpController) {
+  delete(path: string, controller: HttpController) {
     this.defineEndpoint(path, "DELETE", controller);
   }
 
@@ -43,7 +46,7 @@ class HttpRouter {
     this._middlewares.push(middleware);
   }
 
-  async handle(req: IncomingMessage, res: ServerResponse<IncomingMessage>) {
+  async handle(req: HttpRequest, res: HttpResponse) {
     const path = req.url as string;
     const method = req.method as HttpMethod;
 
@@ -54,6 +57,8 @@ class HttpRouter {
     /**
      * Routing
      */
+    
+    
     const relativePaths = Array.from(this._endpoints.keys());
     const triggeredPaths = relativePaths.filter(relativePath => {
       const route = new HttpRoute(`${this._basePath}/${relativePath}`);
@@ -72,7 +77,7 @@ class HttpRouter {
     return false;
   }
 
-  private defineEndpoint(path: path, method: HttpMethod, controller: HttpController) {
+  private defineEndpoint(path: string, method: HttpMethod, controller: HttpController) {
     
     if (this.isRelativePathUndefined(path)) {
       this._endpoints.set(path, new Map<HttpMethod, HttpController>());
@@ -88,11 +93,11 @@ class HttpRouter {
     logger.ok(`Route ${method} ${this._basePath}${path} defined`)
   }
 
-  private isRelativePathUndefined(relativePath: path) {
+  private isRelativePathUndefined(relativePath: string) {
     return this._endpoints.get(relativePath) === undefined;
   }
   
-  private isEndpointAlreadyRegistered(relativePath: path, method: HttpMethod) {
+  private isEndpointAlreadyRegistered(relativePath: string, method: HttpMethod) {
     return (this._endpoints
       .get(relativePath) as Map<HttpMethod, HttpController>
     ).get(method) !== undefined;

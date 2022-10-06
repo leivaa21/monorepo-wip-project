@@ -1,5 +1,6 @@
-import { IncomingMessage, ServerResponse } from "http";
+import HttpRequest from "./HttpRequest";
+import HttpResponse from "./HttpResponse";
 
-type HttpRequestHandler = (req: IncomingMessage, res: ServerResponse<IncomingMessage>) => Promise<void> | void;
+type HttpRequestHandler = (req: HttpRequest, res: HttpResponse) => Promise<void> | void;
 
 export default HttpRequestHandler;

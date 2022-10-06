@@ -8,7 +8,7 @@ export default function Middleware(options: MiddlewareOptions = {}) {
   return (constructor: Constructor<HttpMiddleware>) => {
     let { router } = options;
     if (router === undefined) {
-      router = '';
+      router = '/';
     }
     Server.registerMiddleware(router, new constructor().execute);
   };

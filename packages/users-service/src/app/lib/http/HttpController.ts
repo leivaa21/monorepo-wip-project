@@ -1,7 +1,9 @@
 import { IncomingMessage, ServerResponse } from "http";
+import HttpRequest from "./HttpRequest";
+import HttpResponse from "./HttpResponse";
 
 interface HttpController {
-  execute: (req: IncomingMessage, res: ServerResponse<IncomingMessage>, args?: Map<string, string>) => Promise<void> | void
+  execute: (req: HttpRequest, res: HttpResponse, args?: Map<string, string>) => Promise<void> | void
 }
 
 export default HttpController;

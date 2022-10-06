@@ -16,12 +16,12 @@ export function formatOptions(options: RouteOptions ) {
     }
 
     // Format paths!
-    if (router.startsWith('/')) {
-      router = router.slice(1)
+    if (!router.startsWith('/')) {
+      router = `/${router}`
     }
 
-    if (!path.startsWith('/')) {
-      path = `/${path}`
+    if (path.startsWith('/')) {
+      path = path.slice(1)
     }
 
     if (path.endsWith('/') && path.length !== 1) {

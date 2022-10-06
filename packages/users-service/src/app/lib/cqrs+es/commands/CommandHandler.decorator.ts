@@ -5,7 +5,7 @@ import { CommandHandlerOptions } from "./CommandHandlerOptions";
 import { ICommandHandler } from "./ICommandHandler";
 
 export default function CommandHandler(options: CommandHandlerOptions) {
-  return (constructor: Constructor<ICommandHandler>) => {
+  return (constructor: Constructor<ICommandHandler<Object>>) => {
     let { Command, deps } = options;
     if (deps === undefined) deps = [];
     const buildedDependencies =

@@ -1,8 +1,7 @@
 import { InjectableObject } from "../../dependencyInjection/Injector.entity"
 import { Constructor } from "../../types"
-import { Query } from "./Query"
 
 export type QueryHandlerOptions = {
-  Query: Constructor<Query>,
+  Query: Constructor<Object>,
   deps?: Constructor<InjectableObject>[] 
 }

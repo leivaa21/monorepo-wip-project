@@ -5,7 +5,7 @@ import { QueryHandlerOptions } from "./QueryHandlerOptions";
 import { IQueryHandler } from "./IQueryHandler";
 
 export default function QueryHandler(options: QueryHandlerOptions) {
-  return (constructor: Constructor<IQueryHandler>) => {
+  return (constructor: Constructor<IQueryHandler<Object>>) => {
     let { Query, deps } = options;
     if (deps === undefined) deps = [];
     const buildedDependencies =

@@ -1,7 +1,6 @@
 import { EventBus } from "..";
-import { Event } from '../events/Event';
 abstract class AggregateRoot {
-  async emit<IEvent extends Event>(event: IEvent) {
+  async emit<IEvent extends Object>(event: IEvent) {
     await EventBus.dispatch<IEvent, void>(event);
   }
 }

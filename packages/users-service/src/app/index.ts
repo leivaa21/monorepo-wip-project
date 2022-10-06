@@ -1,7 +1,6 @@
 import { Server } from './lib/http/server';
 import './router';
 import './middlewares';
-
 import logger from './lib/logger/consoleLogger';
 
 const server = Server.bootstrap();

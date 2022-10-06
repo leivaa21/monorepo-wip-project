@@ -1,8 +1,7 @@
 import { InjectableObject } from "../../dependencyInjection/Injector.entity"
 import { Constructor } from "../../types"
-import { Event } from "./Event"
 
 export type EventHandlerOptions = {
-  Event: Constructor<Event>,
+  Event: Constructor<Object>,
   deps?: Constructor<InjectableObject>[] 
 }

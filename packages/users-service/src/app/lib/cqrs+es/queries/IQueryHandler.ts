@@ -1,4 +1,3 @@
 import BaseHandler from "../core/BaseHandler";
-import { Query } from "./Query";
 
-export interface IQueryHandler extends BaseHandler<Query, unknown> {}
+export interface IQueryHandler<Query> extends BaseHandler<Query, unknown> {}

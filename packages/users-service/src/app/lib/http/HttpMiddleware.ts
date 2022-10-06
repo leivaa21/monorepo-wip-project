@@ -1,5 +1,6 @@
-import { IncomingMessage, ServerResponse } from "http";
+import HttpRequest from "./HttpRequest";
+import HttpResponse from "./HttpResponse";
 
 export default interface HttpMiddleware {
-  execute(req: IncomingMessage, res: ServerResponse<IncomingMessage>): Promise<void> | void
+  execute(req: HttpRequest, res: HttpResponse): Promise<void> | void
 }
